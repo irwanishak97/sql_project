@@ -1,0 +1,130 @@
+--Senario : The administrator want to use function device_discount to calculate the devices' sale price. The sale price will be calculate by the base price minus its discount.
+----------------------------------------------------------------------------------------------------
+
+create or replace function device_discount(device_id IN varchar2)
+return varchar2
+is 
+discount number;
+begin
+    if device_id = 'P006' THEN discount := 0.16;
+        elsif device_id = 'L002' then discount := 0.20;
+        else discount := 0.1;
+    end if;
+    return(discount);
+end;
+
+accept device_id prompt 'Enter The device id: '
+
+declare
+v_total         number(6,2);
+v_price         price_list2.price%type;
+v_deviceid      price_list2.device_id%type :='&device_id';
+begin
+select price into v_price
+from price_list2
+where device_id = '&device_id';
+
+v_total := v_price-(v_price*device_discount('&device_id'));
+
+dbms_output.put_line('The device ' || v_deviceid ||' before being discount is '||v_price);
+dbms_output.put_line('The device ' || v_deviceid ||' price after being discount is '||v_total);
+end;
+
+
+------------------------------------------------------------second function
+set verify off
+set serveroutput on
+
+create or replace function gsttax(v_datepurchase in date)
+return varchar2
+is
+settax varchar(50);
+
+begin
+    if v_datepurchase > '15-JULY-2013' then settax := 'Your purchase will add with tax which is 6%';
+    else
+        settax := 'Your purchase does not have any tax';
+    end if;
+return (settax);
+end;
+
+
+
+accept order_id prompt 'Enter the order id: '
+
+declare
+v_modelname     device.model_name%type;
+v_price         price_list2.price%type;
+v_datepurchase  order2.date_purchase%type;
+v_settax        varchar2(60);
+begin
+
+select model_name, price, date_purchase
+into v_modelname,v_price,v_datepurchase
+from price_list2 natural join device natural join order2
+where order_id = '&order_id';
+
+v_settax := gsttax(v_datepurchase);
+    dbms_output.put_line('The status for your devices is: ' || v_settax);
+end;
+
+---------------------------------------------------------------------------------------------------------------
+The administrators want to use function worker id to generate the official email for the workers. The email is created based on their worker ID and their name.
+--______________________________________________________________________________________________________________
+set serveroutput on
+set verify off
+
+
+accept userid prompt 'Enter the user id:'
+
+declare
+    type my_refcur is ref cursor return user2%rowtype;
+    cur_var my_refcur;
+    record_var user2%rowtype;
+    generateEmail varchar2(50);
+    v_userid    user2.user_id%type := '&userid';
+    ex_userid exception;
+    pragma exception_init(ex_userid, -06502);
+begin
+    
+    open cur_var for 
+    select * from user2
+    where user_id = v_userid;
+    
+    loop
+
+    fetch cur_var into record_var;
+        if  record_var.user_id is null then
+            dbms_output.put_line('Please re-type your user id');
+                     
+        end if;
+        
+        exit when cur_var%notfound;
+            generateEmail := createEmail(record_var.user_id);
+            dbms_output.put_line(generateEmail);
+--            raise ex_userid;
+    end loop;
+    close cur_var;
+--        exception 
+--            when ex_userid then
+--             dbms_output.put_line('The user id is too big');
+end;
+
+
+create or replace function createEmail(f_userid in user2.user_id%type)
+return varchar2
+is
+
+text        varchar2(100);
+begin
+
+for x in (select user_id, first_name,last_name from user2 where user_id = f_userid)
+
+LOOP
+    
+    text := 'The email address is '|| x.user_id || '.'|| x.first_name || x.last_name|| '@gmail.com';
+    
+    
+end loop;
+return text;
+end;

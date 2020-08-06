@@ -1,0 +1,133 @@
+DROP TABLE USER2 cascade constraints;
+DROP TABLE WORKER cascade constraints;
+DROP TABLE DEVICE cascade constraints;
+DROP TABLE ORDER2 cascade constraints;
+DROP TABLE SUPPLIER cascade constraints;
+DROP TABLE PRICE_LIST2 cascade constraints;
+
+CREATE TABLE USER2
+(USER_ID                                                varchar2(5),
+FIRST_NAME                                              varchar2(20),
+LAST_NAME                                               varchar2(20),
+ADDRESS                                                 varchar2(50),
+AGE                                                     number(3),
+CONSTRAINT USER2_USER_ID_PK PRIMARY KEY (USER_ID));
+
+
+CREATE TABLE WORKER 
+(WORKER_ID                                                varchar2(5),
+FIRST_NAME                                                varchar2(20),
+LAST_NAME                                                 varchar2(20),
+ANNUAL_BONUS                                              number(5),
+DATE_HIRED                                                DATE,
+SALARY                                                    number(5),
+CONSTRAINT WORKER_WORKER_ID_PK PRIMARY KEY (WORKER_ID));
+
+CREATE TABLE SUPPLIER
+(SUPPLIER_ID                                            VARCHAR2(5),
+S_NAME                                              	VARCHAR2(30),
+S_NOPHONE                                        	VARCHAR2(15),
+S_ADDRESS                                               VARCHAR2(50),
+CONSTRAINT SUPPLIER_SUPPLIER_ID_PK PRIMARY KEY (SUPPLIER_ID));
+
+
+CREATE TABLE DEVICE
+(DEVICE_ID                                              VARCHAR2(5),
+SUPPLIER_ID                                             VARCHAR2(5),
+MODEL_NAME                                              VARCHAR2(30),
+OPERATING_SYSTEM                                        VARCHAR2(20),
+STOCK                                                   NUMBER(6),
+CONSTRAINT DEVICE_DEVICE_ID_PK PRIMARY KEY (DEVICE_ID),
+CONSTRAINT DEVICE_SUPPLIER_ID_FK FOREIGN KEY (SUPPLIER_ID) REFERENCES SUPPLIER);
+
+CREATE TABLE ORDER2
+(ORDER_ID                                               VARCHAR2(5),
+USER_ID                                                 VARCHAR2(5),
+DEVICE_ID                                               VARCHAR2(5),
+WORKER_ID                                               VARCHAR2(5),
+QUANTITY                                                NUMBER(3),
+DATE_PURCHASE                                           DATE,
+CONSTRAINT ORDER2_ORDER_ID_PK PRIMARY KEY (ORDER_ID),
+CONSTRAINT ORDER2_USER_ID_FK FOREIGN KEY (USER_ID) REFERENCES USER2,
+CONSTRAINT ORDER2_WORKER_ID_FK FOREIGN KEY (WORKER_ID) REFERENCES WORKER,
+CONSTRAINT ORDER2_DEVICE_ID_FK FOREIGN KEY (DEVICE_ID) REFERENCES DEVICE);
+
+
+
+CREATE TABLE PRICE_LIST2
+(DEVICE_ID                                               VARCHAR2(5),
+PRICE                                            	 NUMBER(6),
+TAX                                                      NUMBER(3,2),
+DISCOUNT                                                 NUMBER(3,2),
+CONSTRAINT PRICE_LIST2_DEVICE_ID_PK PRIMARY KEY (DEVICE_ID));
+
+
+INSERT INTO USER2 VALUES('U001', 'Ali', 'Ahmad', '3434 Mulberry St.',38);
+INSERT INTO USER2 VALUES('U002', 'Abu', 'Sufian','334 Tailgate Ln',44);
+INSERT INTO USER2 VALUES('U003', 'Siti', 'Rafidah','8814 W. Apple ',37);
+INSERT INTO USER2 VALUES('U004', 'Tihani', 'chong','445 Oak St.',28);
+INSERT INTO USER2 VALUES('U005', 'Lee', 'Wei','8898 Bighill Drive',27);
+INSERT INTO USER2 VALUES('U006', 'Lin', 'Dan','298 Murphy School Rd',26);
+INSERT INTO USER2 VALUES('U007', 'David', 'Becham','334 Pansie Hill Rd.',25);
+INSERT INTO USER2 VALUES('U008', 'Ronaldo', 'Satria','456 E. Grand #14',50);
+INSERT INTO USER2 VALUES('U009', 'Wei', 'Sinnin','6543 W. Parkview Ln.',40);
+INSERT INTO USER2 VALUES('U010', 'Mannan', 'Kamui','6657 N. Allen',30);
+
+
+INSERT INTO WORKER VALUES('W001', 'Husnul', 'Tarmizi', 2000, 	TO_DATE('11-JAN-11'),3800);
+INSERT INTO WORKER VALUES('W002', 'Nadzreen', 'Aqil', 100, 	TO_DATE('10-FEB-10'),4400);
+INSERT INTO WORKER VALUES('W003', 'Irwan', 'Ishak',500,		TO_DATE('21-MARCH-12'),3700);
+INSERT INTO WORKER VALUES('W004', 'Amir', 'Ng',10000,		TO_DATE('23-APRIL-09'),28000);
+INSERT INTO WORKER VALUES('W005', 'Saliha', 'Salina',1200,	TO_DATE('11-MAY-11'),2700);
+INSERT INTO WORKER VALUES('W006', 'Raju', 'Sink',900,		TO_DATE('29-JUNE-12'),2600);
+INSERT INTO WORKER VALUES('W007', 'Amelin', 'Sofia',850,	TO_DATE('30-JULY-12'),2500);
+INSERT INTO WORKER VALUES('W008', 'Daniel', 'Kriss',2500,	TO_DATE('31-AUGUST-09'),5000);
+INSERT INTO WORKER VALUES('W009', 'Elizabeth', 'Tan',300,	TO_DATE('22-SEPTEMBER-12'),4000);
+INSERT INTO WORKER VALUES('W010', 'Sabar', 'Soleh',980,		TO_DATE('24-OCTOBER-12'),3000);
+
+
+INSERT INTO SUPPLIER VALUES('S001', 'SAMSUNG SDN BHD', 		'110-235-4403', 'South Korea');
+INSERT INTO SUPPLIER VALUES('S002', 'XIAOMI', 			'882-923-6123',	'China');
+INSERT INTO SUPPLIER VALUES('S003', 'LENOVO', 			'912-592-5478',	'China');
+INSERT INTO SUPPLIER VALUES('S004', 'ASUS', 			'621-483-5392',	'Taiwan');
+INSERT INTO SUPPLIER VALUES('S005', 'DELL', 			'530-324-9238',	'United States');
+INSERT INTO SUPPLIER VALUES('S006', 'ONE PLUS', 		'540-012-1293',	'China');
+INSERT INTO SUPPLIER VALUES('S007', 'HP', 			'701-059-6492',	'United State');
+INSERT INTO SUPPLIER VALUES('S008', 'BLACKBERRY', 		'012-609-3204', 'Canada');
+INSERT INTO SUPPLIER VALUES('S009', 'ACER', 			'163-604-3041', 'Taiwan');
+INSERT INTO SUPPLIER VALUES('S010', 'APPLE SDN BHD', 		'865-453-8234', 'United States');
+
+
+INSERT INTO DEVICE VALUES('P001', 'S010', 'IPHONE X', 		'IOS14',3800);
+INSERT INTO DEVICE VALUES('P002', 'S001', 'SAMSUNG S20',	'ANDROID 12',440);
+INSERT INTO DEVICE VALUES('L001', 'S003', 'LENOVO IDEAPAD',	'WINDOWS 10',370);
+INSERT INTO DEVICE VALUES('P003', 'S002', 'BLACKSHARK XIAOMI',	'MIUI 12',288);
+INSERT INTO DEVICE VALUES('P004', 'S006', 'ONE PLUS 7T',	'OXYGEN OS 3',2703);
+INSERT INTO DEVICE VALUES('L002', 'S005', 'DELL XPS 15',	'WINDOWS 8',2655);
+INSERT INTO DEVICE VALUES('L003', 'S009', 'ACER DUO 12',	'WINDOWS XP',251);
+INSERT INTO DEVICE VALUES('P005', 'S010', 'APPLE XS',		'IOS14',5023);
+INSERT INTO DEVICE VALUES('L004', 'S007', 'ASUS ROG 15 ELITE',	'WINDOWS 10 PRO',5500);
+INSERT INTO DEVICE VALUES('P006', 'S010', 'IPHONE 12',		'IOS14',30000);
+
+INSERT INTO ORDER2 VALUES('O001', 'U001', 'L001','W010', 3,TO_DATE('11-FEB-13'));
+INSERT INTO ORDER2 VALUES('O002', 'U005', 'P003','W009', 1,TO_DATE('10-MARCH-13'));
+INSERT INTO ORDER2 VALUES('O003', 'U001', 'P004','W008', 2,TO_DATE('04-JUNE-13'));
+INSERT INTO ORDER2 VALUES('O004', 'U007', 'P005','W007', 4,TO_DATE('08-JULY-13'));
+INSERT INTO ORDER2 VALUES('O005', 'U001', 'P001','W006', 1,TO_DATE('19-AUGUST-13'));
+INSERT INTO ORDER2 VALUES('O006', 'U008', 'P001','W005', 2,TO_DATE('23-SEPTEMBER-13'));
+INSERT INTO ORDER2 VALUES('O007', 'U009', 'L003','W004', 1,TO_DATE('28-OCT-13'));
+INSERT INTO ORDER2 VALUES('O008', 'U010', 'P006','W004', 8,TO_DATE('13-NOV-13'));
+INSERT INTO ORDER2 VALUES('O009', 'U002', 'P001','W003', 3,TO_DATE('01-DEC-13'));
+INSERT INTO ORDER2 VALUES('O010', 'U003', 'P002','W002', 4,TO_DATE('10-AUGUST-13'));
+
+INSERT INTO PRICE_LIST2 VALUES('P001', 2500, 0.16, 0.02);
+INSERT INTO PRICE_LIST2 VALUES('P002', 3000, 0.10, 0.10);
+INSERT INTO PRICE_LIST2 VALUES('L001', 1500, 0.15, 0.20);
+INSERT INTO PRICE_LIST2 VALUES('P003', 2900, 0.13, 0.09);
+INSERT INTO PRICE_LIST2 VALUES('P004', 3500, 0.17, 0.05);
+INSERT INTO PRICE_LIST2 VALUES('L002', 6900, 0.16, 0.01);
+INSERT INTO PRICE_LIST2 VALUES('L003', 3100, 0.11, 0.25);
+INSERT INTO PRICE_LIST2 VALUES('P005', 3500, 0.16, 0.01);
+INSERT INTO PRICE_LIST2 VALUES('L004', 5500, 0.10, 0.20);
+INSERT INTO PRICE_LIST2 VALUES('P006', 5500, 0.16, 0.01);
+

@@ -1,0 +1,94 @@
+--The administrator want to use updatePrice procedure to update the devices' price. The new price of the devices will be determine based on their current value.
+-----------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE updatePrice(i_device_id IN price_list2.device_id%TYPE)
+IS
+CURSOR up_device(p_device_id price_list2.device_id %TYPE)
+IS
+SELECT device_id, price,tax,DISCOUNT
+FROM price_list2
+WHERE device_id = p_device_id;
+
+
+v_device_id             price_list2.device_id%TYPE;
+v_price                 price_list2.price%TYPE;
+v_tax                   price_list2.tax%TYPE;
+v_discount              price_list2.discount%TYPE;
+v_newprice              price_list2.price%TYPE;
+v_rebate                price_list2.price%TYPE;
+v_newpricerebate        price_list2.price%TYPE;
+
+BEGIN
+    OPEN up_device(i_device_id);
+    LOOP
+    FETCH up_device
+    INTO v_device_id, v_price,v_tax,v_discount;
+    
+    exit when up_device%NOTFOUND;
+
+    IF v_price <= 3000 THEN
+        v_newprice := (v_price)+(v_price*v_tax)*(v_discount);
+        dbms_output.put_line('Old price is:' || v_price);
+        
+        dbms_output.put_line('The new price is: '||v_newprice);
+    elsif v_price >= 5500 THEN
+        v_rebate := 500;
+        v_newpricerebate := (v_price+(v_price*v_tax)) - v_rebate;
+        dbms_output.put_line('Old price is:' || v_price);
+        dbms_output.put_line('The new price is: '|| v_newpricerebate );      
+    ELSE
+        dbms_output.put_line('second');
+    END IF;
+    END LOOP;
+    
+    CLOSE up_device;
+END;
+--###########
+BEGIN
+    updatePrice('P006'); 
+END;
+
+BEGIN
+    updatePrice('L001');
+END;
+
+--##############################2
+--The administrator want to use addDevice procedure to add details of the new devices into the system. The procedure will print the error if the device ID is in invalid format.
+---------------------------------------------------------------------------------------------------------------
+set serveroutput on
+set verify off
+
+create or replace procedure addDevice(
+p_deviceid          device.device_id%type,
+p_modelname         device.model_name%type,
+p_operatingsystem   device.operating_system%type,
+p_stock             device.stock%type)
+as
+    
+    ex_device_id exception;
+    pragma exception_init(ex_device_id, -12899);
+begin
+    insert into device(device_id,model_name,operating_system, stock)
+    values(p_deviceid,p_modelname,p_operatingsystem,p_stock);
+    if SQL%NOTFOUND THEN
+        raise ex_device_id;
+    end if;
+    exception
+        when ex_device_id then
+        dbms_output.put_line('The device ID is too big!!! PLease retry again (DEVICE ID ONLY UP TO 5 CHARACTERS!!!).');
+end addDevice;
+
+
+accept p_deviceid PROMPT 'Enter device id:' 
+accept p_modelname PROMPT 'Enter model name:' 
+accept p_operatingsystem PROMPT 'Enter operating system:' 
+accept p_stock PROMPT 'Enter stock:' 
+
+begin
+addDevice('&p_deviceid','&p_modelname','&p_operatingsystem','&p_stock');
+if SQL%FOUND then
+    dbms_output.put_line('New row is added!!');
+    end if;
+end;
+
+select * from device;

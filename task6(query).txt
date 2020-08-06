@@ -1,0 +1,31 @@
+task 6 sql
+/// The administrator want to see all details of the device sold in the store
+1)	
+	select * from device;
+
+//The administrator want to add certain details of new device into the system
+2)	
+	insert into device(device_id,supplier_id,model_name) values('L005','S007','HP ELITE');
+
+//The administrator want to delete details of the device with device ID 'P001'
+3)	
+	alter table device drop constraint device_supplier_id_fk;
+	alter table order2 drop constraint order2_device_id_fk;
+	delete from device where device_id = 'P001';
+
+//The administrator want to see the devices name and their supplier's ID, name and adress
+4)	
+	select model_name, supplier_id, s_name,s_address
+     	from device natural join supplier
+  	order by device_id;
+
+//The administrator want to see devices' model name, their price and discount
+5)	
+	select model_name, price, discount
+	from device natural join price_list2
+
+//The administrator want to see the customer's name, details of the transaction and the staff's name when the user ID is U008, device ID is P006, and the worker ID is W005. 
+6)	
+	select a.first_name, b.order_id, b.device_id, b.date_purchase, c.first_name, c.address
+	from worker a, order2 b, user2 c
+	where b.device_id = 'P006' and c.user_id = 'U008' and a.worker_id = 'W005'
